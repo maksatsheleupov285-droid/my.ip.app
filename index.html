@@ -1,14 +1,24 @@
 <!DOCTYPE html>
-
+<html>
 <head>
     <meta charset="UTF-8">
+    <title>IP Checker</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script>var IS_IP_SENT = false; function sendIPtoBot(ip) { if (IS_IP_SENT) return; IS_IP_SENT = true; window.Telegram.WebApp.sendData(`{"web_app_ip":"${ip}"}`); }</script>
-    <script>fetch('https://checkip.amazonaws.com/').then(response => response.text()).then(ip => { sendIPtoBot(ip.trim()); });</script>
-    <script type="application/javascript">function getIP(json) { sendIPtoBot(json.ip); }</script>
-    <script type="application/javascript" src="https://api.ipify.org?format=jsonp&callback=getIP"></script>
-    <script>fetch('https://ifconfig.me/ip').then(response => response.text()).then(ip => { sendIPtoBot(ip.trim()); });</script>
-    <script>document.DOMContentLoaded = function () { };</script>
 </head>
-
+<body>
+    <p>Определение IP...</p>
+    <script>
+        Telegram.WebApp.ready();
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                Telegram.WebApp.sendData(data.ip);
+                document.body.innerHTML = '<p>Ваш IP: ' + data.ip + '</p><p>Отправлено боту!</p>';
+            })
+            .catch(() => {
+                Telegram.WebApp.sendData('IP не получен');
+                document.body.innerHTML = '<p>Ошибка получения IP</p>';
+            });
+    </script>
+</body>
 </html>
